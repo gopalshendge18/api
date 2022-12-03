@@ -3,13 +3,26 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from django.http import JsonResponse
+from fuzzywuzzy import fuzz
+from pyphonetics import RefinedSoundex
+
 
 @api_view(['GET'])
-def hello_world(request):
+def ScoreCalculator(request):
     
-    solute = request.GET.get('solute')
+    UserInput = request.GET.get('user')
+    StandardInput = request.GET.get('standard')
+    if UserInput == None:
+       UserInput ="x"
+    if StandardInput == None:
+       StandardInput ="x"
+    results = fuzz.ratio(UserInput.lower(),StandardInput.lower())
+    rs = RefinedSoundex()
+    ans = rs.distance(UserInput.lower(),StandardInput.lower())
+    ans =str(ans)
+    results= str(results)
     
-    results = [solute]
-    return JsonResponse({'results':solute})
-
+    
+  
+    return JsonResponse({'results':results,'Answer':ans})
 # Create your views here.
